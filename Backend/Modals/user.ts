@@ -14,6 +14,8 @@ const userSchema = new mongoose.Schema(
     disease: { type: String, required: true },
     label: { type: String, required: true },
     profilePic: { type: String, required: true },
+    resetPasswordOTP: { type: String },
+    resetPasswordOTPExpiry: { type: Date },
   },
   { timestamps: true }
 );

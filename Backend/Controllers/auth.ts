@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../Modals/user";
+import crypto from "crypto";
+import nodemailer from "nodemailer";
 
 /* REGISTER */
 export const register = async (req: Request, res: Response) => {
@@ -18,7 +20,7 @@ export const register = async (req: Request, res: Response) => {
       weight,
       disease,
       label,
-      profilePic
+      profilePic,
     } = req.body;
 
     const exists = await User.findOne({ email });
@@ -40,7 +42,7 @@ export const register = async (req: Request, res: Response) => {
       weight,
       disease,
       label,
-      profilePic
+      profilePic,
     });
 
     res.status(201).json({ message: "User registered successfully" });
@@ -64,11 +66,9 @@ export const login = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const token = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET as string,
-      { expiresIn: "1d" }
-    );
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET as string, {
+      expiresIn: "1d",
+    });
 
     res.json({
       token,
@@ -77,9 +77,96 @@ export const login = async (req: Request, res: Response) => {
         name: user.name,
         email: user.email,
         label: user.label,
-        profilePic: user.profilePic
-      }
+        profilePic: user.profilePic,
+      },
     });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// / Create a transporter using Ethereal test credentials.
+// For production, replace with your actual SMTP server details.
+const transporter = nodemailer.createTransport({
+  host: "gmail",
+  port: 465,
+  secure: true, // Use true for port 465, false for port 587
+  auth: {
+    user: "shivramyadav52@gmail.com",
+    pass: process.env.NODE_MAILER_PASS,
+  },
+});
+
+export const sendOTP = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    } else {
+      const otp = (crypto.randomBytes(4).readInt32BE(0) % 900000) + 1000000; // Generate a 6-digit OTP
+      user.resetPasswordOTP = otp.toString();
+      user.resetPasswordOTPExpiry = new Date(Date.now() + 15 * 60 * 1000);
+      await user.save();
+      const mailOptions = {
+        from: '"Apna Zym"<apnazym@gmail.com>',
+        to: email,
+        subject: "Password Reset OTP",
+        text: `Your OTP for password reset is ${otp}. It will expire in 15 minutes.`,
+      };
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error("Error sending OTP email:", error);
+          return res.status(500).json({ message: "Error sending OTP email" });
+        } else {
+          console.log("OTP email sent:", info.response);
+          return res.json({ message: "OTP sent successfully" });
+        }
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const validateOTP = async (req: Request, res: Response) => {
+  try {
+    const { email, otp } = req.body;
+    const user = await User.findOne({ email });
+    if (
+      !user ||
+      user.resetPasswordOTP !== otp ||
+      !user.resetPasswordOTPExpiry ||
+      user.resetPasswordOTPExpiry < new Date()
+    ) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    res.json({ message: "OTP is valid" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+ export const resetPassword = async (req: Request, res: Response) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+    const user = await User.findOne({ email });
+    if (
+      !user ||
+      user.resetPasswordOTP !== otp ||
+      !user.resetPasswordOTPExpiry ||
+      user.resetPasswordOTPExpiry < new Date()
+    ) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    user.resetPasswordOTP = undefined;
+    user.resetPasswordOTPExpiry = undefined;
+    await user.save();
+    res.json({ message: "Password reset successfully" });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
