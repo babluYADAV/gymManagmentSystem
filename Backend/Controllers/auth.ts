@@ -88,12 +88,12 @@ export const login = async (req: Request, res: Response) => {
 // / Create a transporter using Ethereal test credentials.
 // For production, replace with your actual SMTP server details.
 const transporter = nodemailer.createTransport({
-  host: "gmail",
+  host: "smtp.gmail.com",
   port: 465,
   secure: true, // Use true for port 465, false for port 587
   auth: {
     user: "shivramyadav52@gmail.com",
-    pass: process.env.NODE_MAILER_PASS,
+    pass:'clwo ygle xrla uijp',
   },
 });
 
@@ -105,12 +105,13 @@ export const sendOTP = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(400).json({ message: "User not found" });
     } else {
-      const otp = (crypto.randomBytes(4).readInt32BE(0) % 900000) + 1000000; // Generate a 6-digit OTP
+     const otp = crypto.randomInt(100000, 1000000); // 6-digit OTP
       user.resetPasswordOTP = otp.toString();
       user.resetPasswordOTPExpiry = new Date(Date.now() + 15 * 60 * 1000);
+     
       await user.save();
       const mailOptions = {
-        from: '"Apna Zym"<apnazym@gmail.com>',
+        from: "shivramyadav52@gmail.com",
         to: email,
         subject: "Password Reset OTP",
         text: `Your OTP for password reset is ${otp}. It will expire in 15 minutes.`,
