@@ -1,17 +1,20 @@
 import axios from "axios";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
-export default function ConfirmPassword({otp, email}: {otp: string, email: string}) {
+export default function ConfirmPassword() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { email, otp } = location.state;
+
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [error, setError] = useState("");
-
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
- const value = e.target.value;
+    const value = e.target.value;
     setPassword(value);
 
     const passwordRegex =
@@ -26,34 +29,34 @@ export default function ConfirmPassword({otp, email}: {otp: string, email: strin
     } else {
       setPasswordError("");
     }
-  }
-const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setConfirmPassword(e.target.value);
-      if (password !== confirmPassword) {
+  };
+  const handleConfirmPasswordChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setConfirmPassword(e.target.value);
+    if (password !== confirmPassword) {
       setConfirmPasswordError("Passwords do not match");
       return;
     }
+  };
 
-    };
-
-const navigate = useNavigate();
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!password || !confirmPassword) {
       setError("Please fill in all fields");
       return;
     }
-  
+
     axios
       .post("http://localhost:5000/api/auth/resetPassword", {
         otp,
         newPassword: confirmPassword,
-        email
+        email,
       })
       .then((response) => {
         console.log("Password reset successfully", response);
-        if(response.data){
-            navigate('/login');
+        if (response.data) {
+          navigate("/resetPasswordSuccess");
         }
       })
       .catch((error) => {
@@ -89,7 +92,9 @@ const navigate = useNavigate();
               placeholder="Enter new password"
               required
             />
-            {passwordError && (<p className="text-red-500 text-sm mt-1">{passwordError}</p>)}
+            {passwordError && (
+              <p className="text-red-500 text-sm mt-1">{passwordError}</p>
+            )}
           </div>
 
           <div>
@@ -104,7 +109,11 @@ const navigate = useNavigate();
               placeholder="Confirm new password"
               required
             />
-            {confirmPasswordError && (<p className="text-red-500 text-sm mt-1">{confirmPasswordError}</p>)}
+            {confirmPasswordError && (
+              <p className="text-red-500 text-sm mt-1">
+                {confirmPasswordError}
+              </p>
+            )}
           </div>
 
           {error && <p className="text-red-500 text-sm">{error}</p>}

@@ -1,15 +1,17 @@
 import axios from "axios";
 import { useState, useRef, type ChangeEvent, type KeyboardEvent } from "react";
-import ConfirmPassword from "./ConfirmPassword";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const OTP_LENGTH = 6;
 
-const VerifyOtp: React.FC<{ email: string }> = ({ email }) => {
+const VerifyOtp = () => {
+  const navigate = useNavigate();
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(""));
   const [otpError, setOtpError] = useState("");
-  const [showResetPasswordPage, setShowResetPasswordPage] = useState(false);
+  const location = useLocation();
+  const { email } = location.state;
+  console.log("Email in VerifyOtp:", email);
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
-console.log('???????????????????',email);
   const handleChange = (
     e: ChangeEvent<HTMLInputElement>,
     index: number
@@ -38,23 +40,23 @@ console.log('???????????????????',email);
 
   const handleVerify = (): void => {
     // const enteredOtp = otp.join("");
-    if(otp.join("").length<6){
+    if (otp.join("").length < 6) {
       setOtpError("Please enter a valid 6-digit OTP");
       return;
     }
-    if(email===""){
+    if (email === "") {
       setOtpError("something went wrong. Please try again later.");
       return;
     }
     axios
       .post("http://localhost:5000/api/auth/validateOTP", {
         otp: otp.join(""),
-        email
+        email,
       })
       .then((response) => {
         console.log("OTP verified successfully", response);
-        if(response.data){
-          setShowResetPasswordPage(true);
+        if (response.data) {
+          navigate("/confirmPassword", { state: { email, otp: otp.join("") } });
         }
       })
       .catch((error) => {
@@ -64,10 +66,6 @@ console.log('???????????????????',email);
   };
 
   return (
-  <>
-    {showResetPasswordPage ? (
-      <ConfirmPassword otp={otp.join("")} email={email} />
-    ) : (
     <div
       className=" flex items-center justify-center"
       style={{
@@ -119,14 +117,11 @@ console.log('???????????????????',email);
             background:
               "linear-gradient(90deg, #111827 40%, #374151 70%, #000000 100%)",
           }}
-          
         >
           Verify OTP
         </button>
       </div>
     </div>
-    )}
-  </>
   );
 };
 

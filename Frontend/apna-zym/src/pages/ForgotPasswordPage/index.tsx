@@ -1,12 +1,12 @@
 import axios from "axios";
 import { useState } from "react";
-import VerifyOtp from "../../common/VerifyOTP";
+import { useNavigate } from "react-router-dom";
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [otpError, setOtpError] = useState("");
-  const [showOTPPage, setShowOTPPage] = useState(false);
+  const navigate = useNavigate();
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!/\S+@\S+\.\S+/.test(e.target.value) && e.target.value !== "") {
@@ -29,8 +29,8 @@ const ForgotPasswordPage = () => {
       })
       .then((response) => {
         console.log("OTP sent successfully", response);
-        if(response.data){
-          setShowOTPPage(true);
+        if (response.data) {
+          navigate("/verifyOTP", { state: { email } });
         }
       })
       .catch((error) => {
@@ -39,9 +39,6 @@ const ForgotPasswordPage = () => {
       });
   };
   return (
-    <>{showOTPPage ? (
-     <VerifyOtp email={email} />
-    ) : (
     <section
       className="py-16 px-6 min-h-screen flex items-center"
       style={{
@@ -92,7 +89,6 @@ const ForgotPasswordPage = () => {
           </button>
           {otpError && <p className="text-red-500 text-sm mt-1">{otpError}</p>}
 
-
           {}
           <div className="text-center">
             <a href="/login" className="text-sm text-blue-200 hover:underline">
@@ -102,7 +98,6 @@ const ForgotPasswordPage = () => {
         </form>
       </div>
     </section>
-    )}</>
   );
 };
 

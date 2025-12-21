@@ -165,14 +165,12 @@ const RegisterPage = () => {
       setHeightError("");
     }
   };
-const handleDiseaseChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDiseaseChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setDisease(value);
     if (value.trim() === "") {
       setDiseaseError("Please enter disease information or 'none'");
-    }
-
-    else {
+    } else {
       setDiseaseError("");
     }
   };
@@ -216,7 +214,7 @@ const handleDiseaseChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (response.data) {
           setRegisterError("");
           setLoading(false);
-          navigate("/login");
+          navigate("/registrationSuccess");
         }
       })
       .catch((error) => {
