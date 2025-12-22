@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
+import programCategorySchema from "./programCategory";
 
-const categorySchema = new mongoose.Schema(
+const programSchema = new mongoose.Schema(
   {
     title: {
       type: String,
@@ -23,6 +24,7 @@ const categorySchema = new mongoose.Schema(
         required: true,
       },
     },
+    subCategories: [programCategorySchema],
     status: {
       type: Boolean,
       default: true,
@@ -31,4 +33,4 @@ const categorySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("Category", categorySchema);
+export default mongoose.model("Program", programSchema);

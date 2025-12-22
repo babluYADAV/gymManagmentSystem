@@ -14,7 +14,7 @@ const membershipSchema = new mongoose.Schema(
     },
     program: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "SubCategory",
+      ref: "Program",
       required: true,
     },
     status: {
@@ -37,4 +37,4 @@ const membershipSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("Membership", membershipSchema);
+export default mongoose.model("MemberShip", membershipSchema);

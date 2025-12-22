@@ -1,17 +1,16 @@
 const mongoose = require("mongoose");
 
-const subCategorySchema = new mongoose.Schema(
+const programCategorySchema = new mongoose.Schema(
   {
-    category: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
-      required: true,
-    },
+   
     title: {
       type: String,
       required: true,
     },
-
+    image: {
+      type: Array,
+      required: true,
+    },
     description: {
       type: String,
       required: true,
@@ -43,4 +42,4 @@ const subCategorySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("SubCategory", subCategorySchema);
+export default programCategorySchema;
