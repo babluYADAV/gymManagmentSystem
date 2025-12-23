@@ -1,7 +1,8 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import type { IProgramCategory } from "../index";
 
 const CatalogDetail = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const { item } = location.state;
 
@@ -48,14 +49,22 @@ const CatalogDetail = () => {
         <p className="text-gray-100 max-w-3xl mb-10 text-2xl md:text-4xl font-bold">
           {item.description}
         </p>
-
+        {/* Back Button */}
+        <div className="mt-12">
+          <Link
+            to="/"
+            className="inline-block text-blue-400 hover:text-red-500"
+          >
+            ← Back to Program
+          </Link>
+        </div>
         {/* Programs */}
-        <h2 className="text-3xl font-bold mb-8 text-red-500">
+        <h2 className="text-3xl font-bold mb-8 text-gray-100">
           Programs Categories
         </h2>
 
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 justify-center">
-          {item?.subCategories.map((program: IProgramCategory) => (
+          {item?.subCategories.map((program: IProgramCategory, i: number) => (
             <div
               key={program._id}
               className="bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:scale-105 transition-transform duration-300 flex flex-col"
@@ -64,7 +73,7 @@ const CatalogDetail = () => {
               {/* Image */}
               <div className="h-56 w-full overflow-hidden">
                 <img
-                  src={program.image[0]}
+                  src={program.image[i]}
                   alt={program.title}
                   className="w-full h-full object-cover object-center"
                   loading="lazy"
@@ -89,19 +98,26 @@ const CatalogDetail = () => {
                   </div>
                 </div>
 
-                <button className="w-full bg-red-500 hover:bg-red-600 py-2 rounded-lg font-medium mt-auto text-white">
+                <button
+                  className="w-full text-white py-2 rounded transition
+                            focus:outline-none
+                            focus:ring-2 focus:ring-white
+                            active:border active:border-white"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, #111827 40%, #374151 70%, #000000 100%)",
+                  }}
+                  onClick={() =>
+                    navigate("/membership", {
+                      state: { program: program, category: item }, // pass subcategory & main category
+                    })
+                  }
+                >
                   Join Now
                 </button>
               </div>
             </div>
           ))}
-        </div>
-
-        {/* Back Button */}
-        <div className="mt-12">
-          <Link to="/" className="inline-block text-red-400 hover:text-red-500">
-            ← Back to Catalog
-          </Link>
         </div>
       </div>
     </div>

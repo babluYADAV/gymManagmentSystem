@@ -55,7 +55,7 @@ const HomePage = () => {
 
   return (
     <section
-      className=" py-16 px-6"
+      className="min-h-screen text-white"
       style={{
         background:
           "linear-gradient(90deg, #000000 0%, #1e3a8a 50%, #2563eb 100%)",
@@ -105,7 +105,14 @@ const HomePage = () => {
                 </div>
 
                 <button
-                  className="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg font-medium mt-auto"
+                  className="w-full text-white py-2 rounded transition
+                            focus:outline-none
+                            focus:ring-2 focus:ring-white
+                            active:border active:border-white"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, #111827 40%, #374151 70%, #000000 100%)",
+                  }}
                   onClick={() => navigate(`/${item._id}`, { state: { item } })}
                 >
                   See more info
