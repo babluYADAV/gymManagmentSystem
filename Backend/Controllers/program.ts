@@ -4,13 +4,14 @@ import Program from "../Modals/program";
 // Create Program
 export const createProgram = async (req: Request, res: Response) => {
   try {         
-    const { title, description, image, trainer,subCategories,status } = req.body;
-
+    const { title, description, image, trainer,qualification,subCategories,status } = req.body;
+console.log('??????????????????????????/',req.body)
     const program = new Program({
       title,
       description,
       image,
       trainer,
+      qualification,
       subCategories,
       status,
     });
@@ -20,7 +21,7 @@ export const createProgram = async (req: Request, res: Response) => {
   }
 
     catch (error) {
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error" ,errorMessage:error});
     }
 };
 

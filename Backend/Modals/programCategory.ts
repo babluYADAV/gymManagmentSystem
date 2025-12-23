@@ -6,7 +6,7 @@ export interface IProgramCategory extends Document {
   description: string;
   schedule: string;
   programTime?: string;
-  price: number;
+  price: string;
   duration: string;
   status: boolean;
 }
@@ -18,7 +18,7 @@ const programCategorySchema: Schema<IProgramCategory> = new mongoose.Schema(
     description: { type: String, required: true },
     schedule: { type: String, required: true },
     programTime: { type: String },
-    price: { type: Number, required: true },
+    price: { type: String, required: true },
     duration: { type: String, required: true },
     status: { type: Boolean, default: true },
   },

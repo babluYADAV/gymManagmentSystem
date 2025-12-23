@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useState } from "react";
 
 /* =======================
@@ -51,9 +52,32 @@ const CreateProgram: React.FC = () => {
     ],
   });
 
+  const [programImage, setProgramImage] = useState("");
+  const [ProgramCategoryImage, setProgramCategoryImage] = useState<
+    Array<string>
+  >([]);
+
   /* =======================
      Handlers
   ======================= */
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", "gymManagementSystem");
+        const response = await axios.post(
+          "https://api.cloudinary.com/v1_1/dyt4evmw6/image/upload",
+          formData
+        );
+        setProgramImage(response.data.secure_url);
+        console.log("????????????????", response);
+      } catch (error) {
+        console.error("Image upload failed", error);
+      }
+    }
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -118,10 +142,86 @@ const CreateProgram: React.FC = () => {
     }));
   };
 
+  const handleMultiImageUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    try {
+      // Convert FileList to array
+      const filesArray = Array.from(files);
+
+      // Upload each file separately
+      const uploadPromises = filesArray.map(async (file) => {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", "gymManagementSystem");
+
+        const response = await axios.post(
+          "https://api.cloudinary.com/v1_1/dyt4evmw6/image/upload",
+          formData
+        );
+        return response.data.secure_url; // you can store this in state later
+      });
+
+      // Wait for all uploads to finish
+      const results = await Promise.all(uploadPromises);
+      console.log("All uploads finished:", results);
+      setProgramCategoryImage(results);
+
+      // Optionally store URLs in state
+      // setUploadedImages(results.map(r => r.secure_url));
+    } catch (error) {
+      console.error("Image upload failed", error);
+    }
+  };
+
+  const createProgram = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const reqBody = {
+      title: formData.title,
+      description: formData.description,
+      image: programImage,
+      trainer: formData.trainer,
+      qualification: formData.qualification,
+      status: true,
+      subCategories: formData.subCategories.map((data) => ({
+        title: data.title,
+        image: ProgramCategoryImage,
+        description: data.description,
+        schedule: data.schedule,
+        programTime: data.programTime,
+        price: data.price,
+        duration: data.duration,
+        status: true,
+      })),
+    };
+    console.log("????????????????reqBody", reqBody);
+    const token = localStorage.getItem("token"); // or wherever your token is stored
+    console.log("????????????????token", token);
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/program/createProgram",
+        reqBody,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // pass token in header
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log("Program created successfully:", response.data);
+    } catch (error) {
+      console.error("Error creating program:", error);
+    }
+  };
+
   /* =======================
      Render
   ======================= */
-  console.log("??????????????????????????????", formData);
+
   return (
     <section
       className="py-16 px-6 min-h-screen flex items-center"
@@ -152,8 +252,8 @@ const CreateProgram: React.FC = () => {
 
             <input
               name="image"
-              value={formData.image}
-              onChange={handleChange}
+              //   value={formData.image}
+              onChange={handleImageUpload}
               placeholder="Program Image URL"
               type="file"
             />
@@ -211,7 +311,7 @@ const CreateProgram: React.FC = () => {
                     name="image"
                     multiple
                     accept="image/*"
-                    onChange={(e) => handleSubCategoryChange(index, e)}
+                    onChange={handleMultiImageUpload}
                     className="w-full text-sm text-gray-300
                       file:mr-4 file:py-2 file:px-4
                       file:rounded-lg file:border-0
@@ -295,6 +395,7 @@ const CreateProgram: React.FC = () => {
           <button
             type="submit"
             className="w-full py-3 bg-green-600 rounded-lg font-semibold hover:bg-green-700 transition"
+            onClick={createProgram}
           >
             Create Program
           </button>

@@ -1,84 +1,95 @@
-
-import { useParams, Link } from "react-router-dom";
-import data from "./data";
+import { Link, useLocation } from "react-router-dom";
+import type { IProgramCategory } from "../index";
 
 const CatalogDetail = () => {
-  const { id } = useParams<{ id: string }>();
+  const location = useLocation();
+  const { item } = location.state;
 
-  const catalog = data.find(
-    (item) => item.id === Number(id)
-  );
-
-  if (!catalog) {
+  if (!item) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-white " style={{
-        background:
-          "linear-gradient(90deg, #000000 0%, #1e3a8a 50%, #2563eb 100%)",
-        width: "100vw",
-        overflow: "hidden",
-      }}>
+      <div
+        className="min-h-screen flex items-center justify-center text-white"
+        style={{
+          background:
+            "linear-gradient(90deg, #000000 0%, #1e3a8a 50%, #2563eb 100%)",
+          width: "100vw",
+          overflow: "hidden",
+        }}
+      >
         Category not found
       </div>
     );
   }
 
   return (
-    <div className=" min-h-screen text-white"   style={{
+    <div
+      className="min-h-screen text-white"
+      style={{
         background:
           "linear-gradient(90deg, #000000 0%, #1e3a8a 50%, #2563eb 100%)",
         width: "100vw",
         overflow: "hidden",
-      }}>
-
+      }}
+    >
       {/* Hero Section */}
-      <div className="relative h-72">
+      <div className="relative h-[480px]">
         <img
-          src={catalog.image}
-          alt={catalog.category}
-          className="w-full h-full object-cover"
+          src={item.image}
+          alt={item.title}
+          className="w-full h-full object-cover object-center"
         />
         <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-          <h1 className="text-4xl md:text-5xl font-bold">
-            {catalog.category}
-          </h1>
+          <h1 className="text-6xl md:text-8xl font-bold">{item.title}</h1>
         </div>
       </div>
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-6 py-12">
-
-        <p className="text-gray-300 max-w-3xl mb-10">
-          {catalog.description}
+        <p className="text-gray-100 max-w-3xl mb-10 text-2xl md:text-4xl font-bold">
+          {item.description}
         </p>
 
         {/* Programs */}
         <h2 className="text-3xl font-bold mb-8 text-red-500">
-          Programs
+          Programs Categories
         </h2>
 
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {catalog?.programs.map((program) => (
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 justify-center">
+          {item?.subCategories.map((program: IProgramCategory) => (
             <div
-              key={program.id}
-              className="bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:scale-105 transition"
+              key={program._id}
+              className="bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:scale-105 transition-transform duration-300 flex flex-col"
+              style={{ width: "320px", height: "520px" }} // fixed width & height
             >
-              <img
-                src={program.image}
-                alt={program.name}
-                className="h-48 w-full object-cover"
-              />
+              {/* Image */}
+              <div className="h-56 w-full overflow-hidden">
+                <img
+                  src={program.image[0]}
+                  alt={program.title}
+                  className="w-full h-full object-cover object-center"
+                  loading="lazy"
+                />
+              </div>
 
-              <div className="p-6">
-                <h3 className="text-xl font-semibold mb-2">
-                  {program.name}
-                </h3>
+              {/* Content */}
+              <div className="p-4 flex flex-col flex-1 justify-between">
+                <div>
+                  <h3 className="text-xl font-semibold mb-1 truncate">
+                    {program.title}
+                  </h3>
+                  <h4 className="text-sm font-medium mb-2 line-clamp-2 text-gray-200">
+                    {program.description}
+                  </h4>
 
-                <div className="text-sm text-gray-400 mb-4 space-y-1">
-                  <p>⏱ Duration: {program.duration}</p>
-                  <p>🔥 Level: {program.level}</p>
+                  <div className="text-sm text-gray-400 mb-4 space-y-1">
+                    <p>⏱️ Duration: {program.duration}</p>
+                    <p>💰 Price: {program.price}</p>
+                    <p>📅 Start Date: {program.schedule}</p>
+                    <p>🕒 Start Time: {program.programTime}</p>
+                  </div>
                 </div>
 
-                <button className="w-full bg-red-500 hover:bg-red-600 py-2 rounded-lg font-medium">
+                <button className="w-full bg-red-500 hover:bg-red-600 py-2 rounded-lg font-medium mt-auto text-white">
                   Join Now
                 </button>
               </div>
@@ -88,14 +99,10 @@ const CatalogDetail = () => {
 
         {/* Back Button */}
         <div className="mt-12">
-          <Link
-            to="/"
-            className="inline-block text-red-400 hover:text-red-500"
-          >
+          <Link to="/" className="inline-block text-red-400 hover:text-red-500">
             ← Back to Catalog
           </Link>
         </div>
-
       </div>
     </div>
   );
