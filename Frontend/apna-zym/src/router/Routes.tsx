@@ -14,6 +14,7 @@ import RegisterSuccess from "../common/RegistrationSuccess";
 import VerifyOtp from "../common/VerifyOTP";
 import ConfirmPassword from "../common/ConfirmPassword";
 import ResetSuccess from "../common/Success";
+import CreateProgram from "../pages/Admin/CreateProgram";
 
 // Import your page components here
 
@@ -31,12 +32,10 @@ const AppRoutes: React.FC = () => (
       <Route path="/registrationSuccess" element={<RegisterSuccess />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/verifyOTP" element={<VerifyOtp />} />
-
       <Route path="/confirmPassword" element={<ConfirmPassword />} />
-
       <Route path="/resetPasswordSuccess" element={<ResetSuccess />} />
-
       <Route path="/dashboard" element={<DashboardPage />} />
+      <Route path="/createProgram" element={<CreateProgram />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   </Router>

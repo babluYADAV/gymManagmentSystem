@@ -1,36 +1,29 @@
-import mongoose from "mongoose";
-import programCategorySchema from "./programCategory";
+import mongoose, { Document, Schema } from "mongoose";
+import programCategorySchema, { IProgramCategory } from "./programCategory";
 
-const programSchema = new mongoose.Schema(
+export interface IProgram extends Document {
+  title: string;
+  description?: string;
+  image: string;
+  trainer: string;
+  qualification: string;
+  subCategories: IProgramCategory[];
+  status: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+const programSchema: Schema<IProgram> = new mongoose.Schema(
   {
-    title: {
-      type: String,
-      required: true,
-      unique: true, // e.g. Yoga, Cardio, Strength
-    },
-
-    description: {
-      type: String,
-    },
-    image: {
-      type: String,
-      required: true,
-    },
-    trainer: {
-      type: String,
-      required: true,
-      qualification: {
-        type: String,
-        required: true,
-      },
-    },
+    title: { type: String, required: true, unique: true },
+    description: { type: String },
+    image: { type: String, required: true },
+    trainer: { type: String, required: true },
+    qualification: { type: String, required: true },
     subCategories: [programCategorySchema],
-    status: {
-      type: Boolean,
-      default: true,
-    },
+    status: { type: Boolean, default: true },
   },
   { timestamps: true }
 );
 
-export default mongoose.model("Program", programSchema);
+export default mongoose.model<IProgram>("Program", programSchema);

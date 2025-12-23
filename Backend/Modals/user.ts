@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema(
     profilePic: { type: String, required: true },
     resetPasswordOTP: { type: String },
     resetPasswordOTPExpiry: { type: Date },
-    role: { type: String, enum: ["user", "admin"], default: "user" },
+    role: { type: String, enum: ["admin", "trainer", "receptionist", "manager", "member"], default: "member" },
   },
   { timestamps: true }
 );

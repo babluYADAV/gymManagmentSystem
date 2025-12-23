@@ -10,6 +10,7 @@ const labelOptions = [
   "Fitness",
   "Bodybuilding",
 ];
+const userOptions = ["admin", "trainer", "receptionist", "manager", "member"];
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -41,6 +42,7 @@ const RegisterPage = () => {
   const [profileImgError, setProfileImgError] = useState("");
   const [heightError, setHeightError] = useState("");
   const [diseaseError, setDiseaseError] = useState("");
+  const [role, setRole] = useState("member");
 
   const [loading, setLoading] = useState(false);
 
@@ -208,6 +210,7 @@ const RegisterPage = () => {
         disease,
         label: selectedLabel,
         profilePic: profileImg,
+        role: role,
       })
       .then((response) => {
         console.log(response.data);
@@ -489,6 +492,26 @@ const RegisterPage = () => {
               <span className="text-sm text-red-400">{diseaseError}</span>
             </div>
             {/* Label for Gym to Start as Dropdown */}
+            <div>
+              <label className="block text-gray-200 mb-1" htmlFor="gymLabel">
+                Label for Gym to Start
+              </label>
+              <select
+                id="gymLabel"
+                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-900 text-gray-100 border-blue-900"
+                required
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+              >
+                <option value="">Select user type</option>
+                {userOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+              <span className="text-sm text-red-400">{labelError}</span>
+            </div>
             <div>
               <label className="block text-gray-200 mb-1" htmlFor="gymLabel">
                 Label for Gym to Start

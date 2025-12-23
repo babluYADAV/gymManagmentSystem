@@ -1,43 +1,26 @@
-const mongoose = require("mongoose");
+import mongoose, { Document, Schema } from "mongoose";
 
-const programCategorySchema = new mongoose.Schema(
+export interface IProgramCategory extends Document {
+  title: string;
+  image: string[];
+  description: string;
+  schedule: string;
+  programTime?: string;
+  price: number;
+  duration: string;
+  status: boolean;
+}
+
+const programCategorySchema: Schema<IProgramCategory> = new mongoose.Schema(
   {
-   
-    title: {
-      type: String,
-      required: true,
-    },
-    image: {
-      type: Array,
-      required: true,
-    },
-    description: {
-      type: String,
-      required: true,
-    },
-
-    schedule: {
-      type: String, // e.g. Mon-Fri 6AM – 7AM
-      required: true,
-    },
-
-    programTime: {
-      type: String, // e.g. 1 Hour
-    },
-
-    price: {
-      type: Number,
-      required: true,
-    },
-    duration: {
-      type: String, // e.g. 3 Months
-      required: true,
-    },
-
-    status: {
-      type: Boolean,
-      default: true,
-    },
+    title: { type: String, required: true },
+    image: { type: [String], required: true },
+    description: { type: String, required: true },
+    schedule: { type: String, required: true },
+    programTime: { type: String },
+    price: { type: Number, required: true },
+    duration: { type: String, required: true },
+    status: { type: Boolean, default: true },
   },
   { timestamps: true }
 );

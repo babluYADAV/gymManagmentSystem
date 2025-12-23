@@ -21,6 +21,7 @@ export const register = async (req: Request, res: Response) => {
       disease,
       label,
       profilePic,
+      role,
     } = req.body;
 
     const exists = await User.findOne({ email });
@@ -43,6 +44,7 @@ export const register = async (req: Request, res: Response) => {
       disease,
       label,
       profilePic,
+      role,
     });
 
     res.status(201).json({ message: "User registered successfully" });
@@ -77,6 +79,7 @@ export const login = async (req: Request, res: Response) => {
         name: user.name,
         email: user.email,
         label: user.label,
+        role: user.role,
         profilePic: user.profilePic,
       },
     });
@@ -85,6 +88,33 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
+export const getAllUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await User.find();
+    if (!users) {
+      return res.status(400).json({ message: "No user found!!" });
+    }
+    res.status(200).json({
+      users,
+    });
+  } catch (error) {
+    res.status(400).json({ message: "No user found!!" });
+  }
+};
+export const getUser = async (req: Request, res: Response) => {
+  try {
+    const {id}=req.body
+    const user = await User.findOne({id});
+    if (!user) {
+      return res.status(400).json({ message: "No user found!!" });
+    }
+    res.status(200).json({
+      user,
+    });
+  } catch (error) {
+    res.status(400).json({ message: "No user found!!" });
+  }
+};
 // / Create a transporter using Ethereal test credentials.
 // For production, replace with your actual SMTP server details.
 const transporter = nodemailer.createTransport({
@@ -93,7 +123,7 @@ const transporter = nodemailer.createTransport({
   secure: true, // Use true for port 465, false for port 587
   auth: {
     user: "shivramyadav52@gmail.com",
-    pass:'clwo ygle xrla uijp',
+    pass: "clwo ygle xrla uijp",
   },
 });
 
@@ -105,10 +135,10 @@ export const sendOTP = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(400).json({ message: "User not found" });
     } else {
-     const otp = crypto.randomInt(100000, 1000000); // 6-digit OTP
+      const otp = crypto.randomInt(100000, 1000000); // 6-digit OTP
       user.resetPasswordOTP = otp.toString();
       user.resetPasswordOTPExpiry = new Date(Date.now() + 15 * 60 * 1000);
-     
+
       await user.save();
       const mailOptions = {
         from: "shivramyadav52@gmail.com",
@@ -149,7 +179,7 @@ export const validateOTP = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Server error" });
   }
 };
- export const resetPassword = async (req: Request, res: Response) => {
+export const resetPassword = async (req: Request, res: Response) => {
   try {
     const { email, otp, newPassword } = req.body;
     const user = await User.findOne({ email });
