@@ -2,23 +2,20 @@ import mongoose from "mongoose";
 
 const membershipSchema = new mongoose.Schema(
   {
-    users: [
+    user: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
       },
     ],
-    price: {
-      type: Number,
-      required: true,
-    },
+  
     program: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Program",
       required: true,
     },
     status: {
-      type: Boolean,
+      type: String,
       default: true,
     },
     startDate: {

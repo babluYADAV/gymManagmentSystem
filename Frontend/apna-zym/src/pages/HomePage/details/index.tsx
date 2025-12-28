@@ -92,7 +92,7 @@ const CatalogDetail = () => {
 
                   <div className="text-sm text-gray-400 mb-4 space-y-1">
                     <p>⏱️ Duration: {program.duration}</p>
-                    <p>💰 Price: {program.price}</p>
+                    <p>💰 Price: ₹{program.price}</p>
                     <p>📅 Start Date: {program.schedule}</p>
                     <p>🕒 Start Time: {program.programTime}</p>
                   </div>

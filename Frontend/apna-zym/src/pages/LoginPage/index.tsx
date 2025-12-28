@@ -63,6 +63,8 @@ const LoginPage = () => {
           setLoginError("");
           setLoading(false);
           localStorage.setItem("token", response.data.token);
+          console.log(response, "??????????????");
+          localStorage.setItem("user", JSON.stringify(response?.data.user));
           navigate("/");
         }
       })

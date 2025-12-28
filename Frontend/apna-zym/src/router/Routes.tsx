@@ -16,6 +16,8 @@ import ConfirmPassword from "../common/ConfirmPassword";
 import ResetSuccess from "../common/Success";
 import CreateProgram from "../pages/Admin/CreateProgram";
 import MemberShipPage from "../pages/MemberShipPage";
+import MembershipSuccess from "../common/PaymentSuccessFull";
+import PrivateRoute from "./ProtectedRoute";
 
 // Import your page components here
 
@@ -37,7 +39,15 @@ const AppRoutes: React.FC = () => (
       <Route path="/resetPasswordSuccess" element={<ResetSuccess />} />
       <Route path="/dashboard" element={<DashboardPage />} />
       <Route path="/createProgram" element={<CreateProgram />} />
-      <Route path="/membership" element={<MemberShipPage />} />
+      <Route
+        path="/membership"
+        element={
+          <PrivateRoute>
+            <MemberShipPage />
+          </PrivateRoute>
+        }
+      />
+      <Route path="/paymentSuccess" element={<MembershipSuccess />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   </Router>
